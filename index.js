@@ -23,6 +23,7 @@ app.use(express.json());
 // Define routes
 app.get('/', (req, res) => {
   res.json({
+    status: 'ok',
     message: 'Orders service is running!',
     instanceId: randomInstanceId,
   });

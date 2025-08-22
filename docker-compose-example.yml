@@ -37,6 +37,7 @@ services:
         failure_action: rollback
       placement:
         max_replicas_per_node: 1
+    pull_policy: always
 
 volumes:
   redis_data:
