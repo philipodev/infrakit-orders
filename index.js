@@ -4,6 +4,8 @@ import Redis from 'ioredis';
 const app = express();
 const port = process.env.PORT || 3000;
 
+const randomInstanceId = crypto.randomUUID();
+
 // Initialize Redis client
 const redis = new Redis({
   host: process.env.REDIS_HOST || 'localhost',
@@ -20,7 +22,10 @@ app.use(express.json());
 
 // Define routes
 app.get('/', (req, res) => {
-  res.send('Orders service is running!');
+  res.json({
+    message: 'Orders service is running!',
+    instanceId: randomInstanceId,
+  });
 });
 
 // Orders routes

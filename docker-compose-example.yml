@@ -1,0 +1,48 @@
+services:
+  redis:
+    image: redis:latest
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  orders:
+    image: ghcr.io/philipodev/infrakit-orders:latest
+    environment:
+      - PORT=3000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    expose:
+      - 3000
+    depends_on:
+      - redis
+    networks:
+      - dokploy-network
+      - app-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.orders.rule=Host(`orders.test1.preview.jongard.com`)
+      - traefik.http.routers.orders.entrypoints=web
+      - traefik.http.services.orders.loadbalancer.server.port=3000
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      placement:
+        max_replicas_per_node: 1
+
+volumes:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
+  dokploy-network:
+    external: true
